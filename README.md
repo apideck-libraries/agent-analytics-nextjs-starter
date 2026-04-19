@@ -1,4 +1,20 @@
+---
+name: Agent Analytics Starter
+slug: agent-analytics-starter
+description: Track AI agent traffic (ClaudeBot, GPTBot, Perplexity, and 20+ more) in PostHog via middleware. Serves clean Markdown to agents on the same URLs — @apideck/agent-analytics wired in.
+framework: Next.js
+useCase: Edge Middleware
+css: Plain CSS
+deployUrl: https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fapideck-libraries%2Fagent-analytics-nextjs-starter&env=NEXT_PUBLIC_POSTHOG_KEY,NEXT_PUBLIC_POSTHOG_HOST&envDescription=PostHog%20project%20API%20key%20and%20host&envLink=https%3A%2F%2Fgithub.com%2Fapideck-libraries%2Fagent-analytics-nextjs-starter%23environment-variables&project-name=agent-analytics-starter&repository-name=agent-analytics-starter
+demoUrl: https://agent-analytics-nextjs-starter.vercel.app
+relatedTemplates:
+  - bot-protection-datadome
+  - bot-protection-botd
+---
+
 <div align="center">
+
+<img src="./public/hero.svg" alt="Agent Analytics — see the agents your JavaScript can't." width="100%" />
 
 # Agent Analytics — Next.js starter
 
