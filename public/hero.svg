@@ -36,28 +36,28 @@
   </g>
 
   <!-- Headline -->
-  <text x="80" y="168" font-family="ui-sans-serif, -apple-system, Segoe UI, Roboto" font-size="64" font-weight="700" fill="#f5f5f5" letter-spacing="-0.025em">See the agents your</text>
-  <text x="80" y="236" font-family="ui-sans-serif, -apple-system, Segoe UI, Roboto" font-size="64" font-weight="700" fill="#f5f5f5" letter-spacing="-0.025em">JavaScript can't.</text>
+  <text x="80" y="168" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="64" font-weight="700" fill="#f5f5f5" letter-spacing="-0.025em">See the agents your</text>
+  <text x="80" y="236" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="64" font-weight="700" fill="#f5f5f5" letter-spacing="-0.025em">JavaScript can't.</text>
 
   <!-- Subhead -->
-  <text x="80" y="280" font-family="ui-sans-serif, -apple-system, Segoe UI, Roboto" font-size="19" fill="#9ca3af" font-weight="400">Drop-in Next.js middleware that tracks ClaudeBot, GPTBot,</text>
-  <text x="80" y="306" font-family="ui-sans-serif, -apple-system, Segoe UI, Roboto" font-size="19" fill="#9ca3af" font-weight="400">Perplexity, and 20+ AI crawlers in PostHog — or any analytics.</text>
+  <text x="80" y="280" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="19" fill="#9ca3af" font-weight="400">Drop-in Next.js middleware that tracks ClaudeBot, GPTBot,</text>
+  <text x="80" y="306" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="19" fill="#9ca3af" font-weight="400">Perplexity, and 20+ AI crawlers in PostHog — or any analytics.</text>
 
   <!-- Bot pills -->
   <g transform="translate(80, 352)">
-    <g transform="translate(0, 0)"><rect width="82" height="28" rx="14" fill="#1f2937" stroke="#374151"/><text x="41" y="19" font-family="ui-sans-serif" font-size="12" fill="#e5e7eb" font-weight="600" text-anchor="middle">ClaudeBot</text></g>
-    <g transform="translate(92, 0)"><rect width="66" height="28" rx="14" fill="#1f2937" stroke="#374151"/><text x="33" y="19" font-family="ui-sans-serif" font-size="12" fill="#e5e7eb" font-weight="600" text-anchor="middle">GPTBot</text></g>
-    <g transform="translate(168, 0)"><rect width="96" height="28" rx="14" fill="#1f2937" stroke="#374151"/><text x="48" y="19" font-family="ui-sans-serif" font-size="12" fill="#e5e7eb" font-weight="600" text-anchor="middle">PerplexityBot</text></g>
-    <g transform="translate(274, 0)"><rect width="128" height="28" rx="14" fill="#1f2937" stroke="#374151"/><text x="64" y="19" font-family="ui-sans-serif" font-size="12" fill="#e5e7eb" font-weight="600" text-anchor="middle">Google-Extended</text></g>
-    <g transform="translate(412, 0)"><rect width="58" height="28" rx="14" fill="#1f2937" stroke="#374151"/><text x="29" y="19" font-family="ui-sans-serif" font-size="12" fill="#e5e7eb" font-weight="600" text-anchor="middle">Cursor</text></g>
+    <g transform="translate(0, 0)"><rect width="82" height="28" rx="14" fill="#1f2937" stroke="#374151"/><text x="41" y="19" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#e5e7eb" font-weight="600" text-anchor="middle">ClaudeBot</text></g>
+    <g transform="translate(92, 0)"><rect width="66" height="28" rx="14" fill="#1f2937" stroke="#374151"/><text x="33" y="19" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#e5e7eb" font-weight="600" text-anchor="middle">GPTBot</text></g>
+    <g transform="translate(168, 0)"><rect width="96" height="28" rx="14" fill="#1f2937" stroke="#374151"/><text x="48" y="19" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#e5e7eb" font-weight="600" text-anchor="middle">PerplexityBot</text></g>
+    <g transform="translate(274, 0)"><rect width="128" height="28" rx="14" fill="#1f2937" stroke="#374151"/><text x="64" y="19" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#e5e7eb" font-weight="600" text-anchor="middle">Google-Extended</text></g>
+    <g transform="translate(412, 0)"><rect width="58" height="28" rx="14" fill="#1f2937" stroke="#374151"/><text x="29" y="19" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#e5e7eb" font-weight="600" text-anchor="middle">Cursor</text></g>
   </g>
 
   <g transform="translate(80, 390)">
-    <g transform="translate(0, 0)"><rect width="76" height="28" rx="14" fill="#1f2937" stroke="#374151"/><text x="38" y="19" font-family="ui-sans-serif" font-size="12" fill="#e5e7eb" font-weight="600" text-anchor="middle">Windsurf</text></g>
-    <g transform="translate(86, 0)"><rect width="78" height="28" rx="14" fill="#1f2937" stroke="#374151"/><text x="39" y="19" font-family="ui-sans-serif" font-size="12" fill="#e5e7eb" font-weight="600" text-anchor="middle">Applebot</text></g>
-    <g transform="translate(174, 0)"><rect width="116" height="28" rx="14" fill="#1f2937" stroke="#374151"/><text x="58" y="19" font-family="ui-sans-serif" font-size="12" fill="#e5e7eb" font-weight="600" text-anchor="middle">Meta-ExternalAgent</text></g>
-    <g transform="translate(300, 0)"><rect width="96" height="28" rx="14" fill="#1f2937" stroke="#374151"/><text x="48" y="19" font-family="ui-sans-serif" font-size="12" fill="#e5e7eb" font-weight="600" text-anchor="middle">Bytespider</text></g>
-    <g transform="translate(406, 0)"><rect width="54" height="28" rx="14" fill="#1f2937" stroke="#374151"/><text x="27" y="19" font-family="ui-sans-serif" font-size="12" fill="#e5e7eb" font-weight="600" text-anchor="middle">+ 12</text></g>
+    <g transform="translate(0, 0)"><rect width="76" height="28" rx="14" fill="#1f2937" stroke="#374151"/><text x="38" y="19" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#e5e7eb" font-weight="600" text-anchor="middle">Windsurf</text></g>
+    <g transform="translate(86, 0)"><rect width="78" height="28" rx="14" fill="#1f2937" stroke="#374151"/><text x="39" y="19" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#e5e7eb" font-weight="600" text-anchor="middle">Applebot</text></g>
+    <g transform="translate(174, 0)"><rect width="116" height="28" rx="14" fill="#1f2937" stroke="#374151"/><text x="58" y="19" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#e5e7eb" font-weight="600" text-anchor="middle">Meta-ExternalAgent</text></g>
+    <g transform="translate(300, 0)"><rect width="96" height="28" rx="14" fill="#1f2937" stroke="#374151"/><text x="48" y="19" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#e5e7eb" font-weight="600" text-anchor="middle">Bytespider</text></g>
+    <g transform="translate(406, 0)"><rect width="54" height="28" rx="14" fill="#1f2937" stroke="#374151"/><text x="27" y="19" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#e5e7eb" font-weight="600" text-anchor="middle">+ 12</text></g>
   </g>
 
   <!-- Terminal card on the right -->
