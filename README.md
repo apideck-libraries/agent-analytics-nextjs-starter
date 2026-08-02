@@ -64,7 +64,7 @@ In the Vercel deploy prompt (or your project's env settings):
 | `NEXT_PUBLIC_POSTHOG_HOST` | no (defaults to US cloud) | `https://us.i.posthog.com`, `https://eu.i.posthog.com`, or your own reverse-proxy |
 | `AGENT_ANALYTICS_ID_SECRET` | recommended | any long random string — `openssl rand -hex 32` |
 
-If `NEXT_PUBLIC_POSTHOG_KEY` is absent the middleware silently no-ops — nothing breaks, events just don't flow.
+If `NEXT_PUBLIC_POSTHOG_KEY` is absent the middleware swaps in a no-op adapter: nothing breaks, no events flow, and — importantly — no outbound requests are made. The PostHog adapter itself doesn't check, so without this guard an unconfigured deployment would POST on every agent visit and log a 401 each time.
 
 ### 3. Verify
 
@@ -139,6 +139,8 @@ Key properties:
 ```
 .
 ├── middleware.ts               # The star of the show
+├── middleware.test.ts          # What gets captured, and what gets routed where
+├── middleware.nokey.test.ts    # No PostHog key → nothing leaves the box
 ├── app/
 │   ├── layout.tsx
 │   ├── page.tsx                # Landing page with probe instructions
@@ -153,6 +155,24 @@ Key properties:
 ├── package.json
 └── README.md
 ```
+
+## Tests
+
+```bash
+npm test          # vitest run
+npm run test:watch
+```
+
+Ten tests over `middleware.ts`. Only the PostHog adapter is stubbed — `trackVisit`,
+`markdownServeDecision` and `verifyRequest` all run for real, so the assertions
+cover what the library actually does with the options passed to it, including the
+`skipBrowsers` filtering that happens inside `trackVisit` rather than in this repo's
+code.
+
+The one worth keeping: **a `curl` user agent on a plain HTML path must produce an
+event.** Tracking used to live inside the "did they ask for Markdown?" branch, which
+meant the template recorded 0.08% of the agent traffic it claimed to measure. That is
+an easy mistake to reintroduce and an invisible one in review, so it is pinned.
 
 ## Customising
 
