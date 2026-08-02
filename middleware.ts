@@ -11,10 +11,19 @@ import { verifyRequest } from '@apideck/agent-analytics/verify'
 
 const ORIGIN = process.env.NEXT_PUBLIC_SITE_ORIGIN || 'http://localhost:3000'
 
-const analytics = posthogAnalytics({
-  apiKey: process.env.NEXT_PUBLIC_POSTHOG_KEY || '',
-  host: process.env.NEXT_PUBLIC_POSTHOG_HOST
-})
+const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY
+
+// Without a key, drop events on the floor instead of shipping them.
+//
+// The adapter does not check: given an empty apiKey it still POSTs to PostHog,
+// which answers 401 and throws. On a deployment with no key configured — the
+// state this template's own demo was in — that is one pointless outbound
+// request and one error log per agent visit, and this template exists to be
+// cloned by people who click Deploy before they have a key. The README has
+// always promised a silent no-op here; this is what makes that true.
+const analytics = POSTHOG_KEY
+  ? posthogAnalytics({ apiKey: POSTHOG_KEY, host: process.env.NEXT_PUBLIC_POSTHOG_HOST })
+  : { async capture() {} }
 
 // Map public URLs to pre-built Markdown files under /md/. Extend this as you
 // add more content — any path not covered here gets a synthesized pointer
