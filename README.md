@@ -5,7 +5,7 @@ description: Track AI agent traffic (ClaudeBot, GPTBot, Perplexity, and 20+ more
 framework: Next.js
 useCase: Edge Middleware
 css: Plain CSS
-deployUrl: https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fapideck-libraries%2Fagent-analytics-nextjs-starter&env=NEXT_PUBLIC_POSTHOG_KEY,NEXT_PUBLIC_POSTHOG_HOST&envDescription=PostHog%20project%20API%20key%20and%20host&envLink=https%3A%2F%2Fgithub.com%2Fapideck-libraries%2Fagent-analytics-nextjs-starter%23environment-variables&project-name=agent-analytics-starter&repository-name=agent-analytics-starter
+deployUrl: https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fapideck-libraries%2Fagent-analytics-nextjs-starter&env=NEXT_PUBLIC_POSTHOG_KEY,NEXT_PUBLIC_POSTHOG_HOST,AGENT_ANALYTICS_ID_SECRET&envDescription=PostHog%20key%20and%20host%2C%20plus%20a%20random%20secret%20for%20anonymous%20ids&envLink=https%3A%2F%2Fgithub.com%2Fapideck-libraries%2Fagent-analytics-nextjs-starter%23environment-variables&project-name=agent-analytics-starter&repository-name=agent-analytics-starter
 demoUrl: https://agent-analytics-nextjs-starter.vercel.app
 relatedTemplates:
   - bot-protection-datadome
@@ -22,7 +22,7 @@ relatedTemplates:
 
 **One-click deploy.** Sample `/docs/` routes that serve as HTML to browsers and **clean Markdown to AI agents**. Every Markdown fetch fires an `agent_visit` event with `is_ai_bot`, `source`, and `user_agent` — ready to segment in PostHog.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fapideck-libraries%2Fagent-analytics-nextjs-starter&env=NEXT_PUBLIC_POSTHOG_KEY,NEXT_PUBLIC_POSTHOG_HOST&envDescription=PostHog%20project%20API%20key%20and%20host&envLink=https%3A%2F%2Fgithub.com%2Fapideck-libraries%2Fagent-analytics-nextjs-starter%23environment-variables&project-name=agent-analytics-starter&repository-name=agent-analytics-starter)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fapideck-libraries%2Fagent-analytics-nextjs-starter&env=NEXT_PUBLIC_POSTHOG_KEY,NEXT_PUBLIC_POSTHOG_HOST,AGENT_ANALYTICS_ID_SECRET&envDescription=PostHog%20key%20and%20host%2C%20plus%20a%20random%20secret%20for%20anonymous%20ids&envLink=https%3A%2F%2Fgithub.com%2Fapideck-libraries%2Fagent-analytics-nextjs-starter%23environment-variables&project-name=agent-analytics-starter&repository-name=agent-analytics-starter)
 
 [**Live demo**](https://agent-analytics-nextjs-starter.vercel.app) · [**@apideck/agent-analytics**](https://github.com/apideck-libraries/agent-analytics) · [**The pattern, explained**](https://addyosmani.com/blog/agentic-engine-optimization/)
 
@@ -60,6 +60,7 @@ In the Vercel deploy prompt (or your project's env settings):
 |---|---|---|
 | `NEXT_PUBLIC_POSTHOG_KEY` | yes | `phc_xxxxxxxx` — from PostHog project settings |
 | `NEXT_PUBLIC_POSTHOG_HOST` | no (defaults to US cloud) | `https://us.i.posthog.com`, `https://eu.i.posthog.com`, or your own reverse-proxy |
+| `AGENT_ANALYTICS_ID_SECRET` | recommended | any long random string — `openssl rand -hex 32` |
 
 If `NEXT_PUBLIC_POSTHOG_KEY` is absent the middleware silently no-ops — nothing breaks, events just don't flow.
 
@@ -103,7 +104,7 @@ Key properties:
 
 - **Fire-and-forget** — the capture is non-blocking. `keepalive: true` lets it survive after the response returns.
 - **No person profiles** — `$process_person_profile: false` tells PostHog not to create one per unique bot fingerprint.
-- **Stable anon distinct_id** — djb2 hash of `ip:ua` collapses repeat fetches from the same agent into one visitor.
+- **Keyed anon distinct_id** — HMAC-SHA-256 of `ip:ua` under `AGENT_ANALYTICS_ID_SECRET` collapses repeat fetches from the same agent into one visitor. Keyed rather than plain: the user agent ships in the clear on the same event, so an unkeyed hash is reversible back to the client IP by brute force.
 
 ## Structure
 
