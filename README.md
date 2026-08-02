@@ -20,7 +20,7 @@ relatedTemplates:
 
 ### Next.js 15 starter that tracks AI agent traffic in PostHog — drop in your API key, deploy, watch ClaudeBot show up in your dashboard.
 
-**One-click deploy.** Sample `/docs/` routes that serve as HTML to browsers and **clean Markdown to AI agents**. Every Markdown fetch fires a `doc_view` event with `is_ai_bot`, `source`, and `user_agent` — ready to segment in PostHog.
+**One-click deploy.** Sample `/docs/` routes that serve as HTML to browsers and **clean Markdown to AI agents**. Every Markdown fetch fires an `agent_visit` event with `is_ai_bot`, `source`, and `user_agent` — ready to segment in PostHog.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fapideck-libraries%2Fagent-analytics-nextjs-starter&env=NEXT_PUBLIC_POSTHOG_KEY,NEXT_PUBLIC_POSTHOG_HOST&envDescription=PostHog%20project%20API%20key%20and%20host&envLink=https%3A%2F%2Fgithub.com%2Fapideck-libraries%2Fagent-analytics-nextjs-starter%23environment-variables&project-name=agent-analytics-starter&repository-name=agent-analytics-starter)
 
@@ -34,7 +34,7 @@ relatedTemplates:
 
 AI crawlers don't run JavaScript — so your client-side analytics never see them. This template closes that gap:
 
-1. **`middleware.ts`** uses [`@apideck/agent-analytics`](https://www.npmjs.com/package/@apideck/agent-analytics) to detect 20+ known AI bots (ClaudeBot, GPTBot, PerplexityBot, Google-Extended, Applebot-Extended, Bytespider, Cursor, Windsurf, and more) and capture a `doc_view` event in PostHog on every request.
+1. **`middleware.ts`** uses [`@apideck/agent-analytics`](https://www.npmjs.com/package/@apideck/agent-analytics) to detect 40+ known AI bots (ClaudeBot, GPTBot, PerplexityBot, Google-Extended, Applebot, Bytespider, DeepSeek, Grok, Cursor, Windsurf, and more) and capture an `agent_visit` event in PostHog on every Markdown fetch.
 2. **`/docs/` routes** are served as clean Markdown when an agent asks (via `.md` suffix, `Accept: text/markdown`, or a known bot UA) — otherwise HTML. Same URL, two representations.
 3. **Every Markdown response** carries `Content-Signal`, `Vary: accept`, and `x-markdown-tokens` headers so agents can budget context before parsing.
 
@@ -70,7 +70,7 @@ If `NEXT_PUBLIC_POSTHOG_KEY` is absent the middleware silently no-ops — nothin
 curl -A "ClaudeBot/1.0 probe-$(date +%s)" https://<your-deployment>.vercel.app/docs/intro
 ```
 
-Open PostHog → Activity and filter events by `event = doc_view`. You should see one event with `is_ai_bot: true`, `source: ua-rewrite`, and the probe UA you sent.
+Open PostHog → Activity and filter events by `event = agent_visit`. You should see one event with `is_ai_bot: true`, `source: ua-rewrite`, and the probe UA you sent.
 
 ---
 
@@ -88,7 +88,7 @@ Open PostHog → Activity and filter events by `event = doc_view`. You should se
       │                      │                                        │
       │     ┌────────────────┴───────────────┐                        │
       │     ▼                                ▼                        │
-      │  trackDocView(req, {                NextResponse.rewrite(     │
+      │  trackVisit(req, {                  NextResponse.rewrite(     │
       │    analytics,                         req.nextUrl → /md/...   │
       │    source: reason,                  )                         │
       │    properties: {...}                                          │
@@ -150,7 +150,7 @@ Then create matching `public/md/blog/*.md` files.
 **Swap analytics backends** — replace the PostHog adapter with a webhook, Mixpanel, or your own callback:
 
 ```ts
-import { trackDocView, webhookAnalytics } from '@apideck/agent-analytics'
+import { trackVisit, webhookAnalytics } from '@apideck/agent-analytics'
 
 const analytics = webhookAnalytics({
   url: 'https://collector.example.com/events',

@@ -34,6 +34,12 @@ export function middleware(req: NextRequest) {
     // Track every Markdown fetch with the source label (ua-rewrite,
     // md-suffix, accept-header). Errors are swallowed — analytics can
     // never break the response.
+    //
+    // No `onlyBots` filter on purpose: this only runs once the request has
+    // already asked for Markdown, so even a plain browser hitting
+    // /docs/intro.md is a signal worth keeping. Pass `onlyBots: true` to
+    // restrict capture to declared crawlers, or `skipBrowsers: true` for
+    // crawlers plus coding agents (curl/axios/got) only.
     void trackVisit(req, {
       analytics,
       source: decision.reason,
