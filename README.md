@@ -20,7 +20,7 @@ relatedTemplates:
 
 ### Next.js 15 starter that tracks AI agent traffic in PostHog — drop in your API key, deploy, watch ClaudeBot show up in your dashboard.
 
-**One-click deploy.** Sample `/docs/` routes that serve as HTML to browsers and **clean Markdown to AI agents**. Every Markdown fetch fires an `agent_visit` event with `is_ai_bot`, `source`, and `user_agent` — ready to segment in PostHog.
+**One-click deploy.** Sample `/docs/` routes that serve as HTML to browsers and **clean Markdown to AI agents**. Every agent request fires an `agent_visit` event with `is_ai_bot`, `ua_category`, `bot_verification`, `source`, and `user_agent` — ready to segment in PostHog.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fapideck-libraries%2Fagent-analytics-nextjs-starter&env=NEXT_PUBLIC_POSTHOG_KEY,NEXT_PUBLIC_POSTHOG_HOST,AGENT_ANALYTICS_ID_SECRET&envDescription=PostHog%20key%20and%20host%2C%20plus%20a%20random%20secret%20for%20anonymous%20ids&envLink=https%3A%2F%2Fgithub.com%2Fapideck-libraries%2Fagent-analytics-nextjs-starter%23environment-variables&project-name=agent-analytics-starter&repository-name=agent-analytics-starter)
 
@@ -34,9 +34,11 @@ relatedTemplates:
 
 AI crawlers don't run JavaScript — so your client-side analytics never see them. This template closes that gap:
 
-1. **`middleware.ts`** uses [`@apideck/agent-analytics`](https://www.npmjs.com/package/@apideck/agent-analytics) to detect 40+ known AI bots (ClaudeBot, GPTBot, PerplexityBot, Google-Extended, Applebot, Bytespider, DeepSeek, Grok, Cursor, Windsurf, and more) and capture an `agent_visit` event in PostHog on every Markdown fetch.
-2. **`/docs/` routes** are served as clean Markdown when an agent asks (via `.md` suffix, `Accept: text/markdown`, or a known bot UA) — otherwise HTML. Same URL, two representations.
-3. **Every Markdown response** carries `Content-Signal`, `Vary: accept`, and `x-markdown-tokens` headers so agents can budget context before parsing.
+1. **`middleware.ts`** uses [`@apideck/agent-analytics`](https://www.npmjs.com/package/@apideck/agent-analytics) to detect 40+ known AI bots (ClaudeBot, GPTBot, PerplexityBot, Google-Extended, Applebot, Bytespider, DeepSeek, Grok, Cursor, Windsurf, and more) and capture an `agent_visit` event in PostHog on **every agent request** — HTML page views included, not only Markdown fetches.
+2. **Coding agents and undeclared automation are captured too.** `curl`, `axios`, `python-requests` and headless browsers never announce themselves as crawlers, so they're classified by HTTP-client fingerprint and header shape instead of by name. Real browsers are skipped — they already run your client-side analytics.
+3. **Every event carries a verification verdict.** `bot_verification` is `verified`, `spoofed`, `unverifiable`, or `not-claimed`, decided by checking the client IP against the vendor's published ranges. A user agent is a claim; this is the part that checks it.
+4. **`/docs/` routes** are served as clean Markdown when an agent asks (via `.md` suffix, `Accept: text/markdown`, or a known bot UA) — otherwise HTML. Same URL, two representations.
+5. **Every Markdown response** carries `Content-Signal`, `Vary: accept`, and `x-markdown-tokens` headers so agents can budget context before parsing.
 
 Runs on Vercel's Fluid Compute. Zero infrastructure to manage, events land in PostHog seconds after deploy.
 
@@ -67,44 +69,70 @@ If `NEXT_PUBLIC_POSTHOG_KEY` is absent the middleware silently no-ops — nothin
 ### 3. Verify
 
 ```bash
-# From your local terminal, pointed at the deployment:
+# A declared AI crawler — gets Markdown back, and is tracked
 curl -A "ClaudeBot/1.0 probe-$(date +%s)" https://<your-deployment>.vercel.app/docs/intro
+
+# A coding agent on an ordinary HTML page — also tracked
+curl -A "curl/8.7.1" https://<your-deployment>.vercel.app/
+
+# A real browser — deliberately NOT tracked
+open https://<your-deployment>.vercel.app/docs/intro
 ```
 
-Open PostHog → Activity and filter events by `event = agent_visit`. You should see one event with `is_ai_bot: true`, `source: ua-rewrite`, and the probe UA you sent.
+Open PostHog → Activity and filter by `event = agent_visit`. You should see:
+
+| probe | `bot_name` | `ua_category` | `is_ai_bot` | `bot_verification` | `source` |
+|---|---|---|---|---|---|
+| ClaudeBot | `Claude` | `declared-crawler` | `true` | `spoofed` | `ua-rewrite` |
+| curl | `curl` | `coding-agent-hint` | `false` | `unverifiable` | `page-view` |
+| browser | — | — | — | — | *no event* |
+
+`spoofed` is the correct verdict for the first probe, and a useful thing to see once: you sent Anthropic's user agent from your laptop, and the IP check caught it. A real ClaudeBot from Anthropic's published range reports `verified`. `unverifiable` means the vendor publishes no range to check against — the honest answer for most coding agents, rather than a guess.
 
 ---
 
 ## How it works
 
 ```
- Agent / Browser                 middleware.ts                    PostHog
-────────────────   ────────────────────────────────────────   ──────────
-      │                                                              │
-      │ GET /docs/intro                                               │
-      │ Accept: text/markdown (or .md suffix, or AI-bot UA)           │
-      ├──────────────────────┐                                        │
-      │                      ▼                                        │
-      │           markdownServeDecision(req) → reason                 │
-      │                      │                                        │
-      │     ┌────────────────┴───────────────┐                        │
-      │     ▼                                ▼                        │
-      │  trackVisit(req, {                  NextResponse.rewrite(     │
-      │    analytics,                         req.nextUrl → /md/...   │
-      │    source: reason,                  )                         │
-      │    properties: {...}                                          │
-      │  }) ────fire-and-forget──────keepalive fetch──►───────────►   │
-      │                                                              │
-      │ ◄──── 200 text/markdown ────────────────                     │
-      │       Content-Signal, x-markdown-tokens                      │
-      │                                                              │
+ Agent / Browser                 middleware.ts                        PostHog
+────────────────   ──────────────────────────────────────────────   ──────────
+      │                                                                   │
+      │ GET /docs/intro                                                   │
+      ├────────────────────►                                              │
+      │                                                                   │
+      │           markdownServeDecision(req) → reason | null              │
+      │                              │                                    │
+      │           ┌──────────────────┴──────────────────┐                 │
+      │           ▼                                     │                 │
+      │   trackVisit(req, {                             │                 │
+      │     skipBrowsers: !decision,  ← browsers only   │                 │
+      │                                 skipped when    │                 │
+      │                                 they didn't ask │                 │
+      │                                 for Markdown    │                 │
+      │     verify: verifyRequest,    ← IP vs published │                 │
+      │                                 vendor ranges   │                 │
+      │     source: reason ?? 'page-view',              │                 │
+      │   }) ──fire-and-forget──keepalive fetch──►──────────────────►     │
+      │                                                 │                 │
+      │           ┌─────────────────────────────────────┘                 │
+      │           ▼                                                       │
+      │   decision ? rewrite → /md/…  :  NextResponse.next()              │
+      │                                                                   │
+      │ ◄──── 200 text/markdown  (or text/html)                           │
+      │       Content-Signal, Vary: accept, x-markdown-tokens             │
+      │                                                                   │
 ```
+
+Tracking happens on the way through, before the routing branch — which is why an
+AI crawler reading plain HTML is recorded just like one that asked for Markdown.
 
 Key properties:
 
 - **Fire-and-forget** — the capture is non-blocking. `keepalive: true` lets it survive after the response returns.
 - **No person profiles** — `$process_person_profile: false` tells PostHog not to create one per unique bot fingerprint.
 - **Keyed anon distinct_id** — HMAC-SHA-256 of `ip:ua` under `AGENT_ANALYTICS_ID_SECRET` collapses repeat fetches from the same agent into one visitor. Keyed rather than plain: the user agent ships in the clear on the same event, so an unkeyed hash is reversible back to the client IP by brute force.
+- **Browsers cost you nothing** — `skipBrowsers: !decision` drops ordinary browser page views, which your client-side analytics already counts. A browser that explicitly requests Markdown is kept: that's a deliberate act, not background traffic.
+- **Verification is a lookup, not a request** — `verifyRequest` matches the client IP against IP ranges published by the vendor and bundled with the library. No outbound call, nothing added to response latency. It ships from `@apideck/agent-analytics/verify` so the range tables only reach bundles that import them.
 
 ## Structure
 
