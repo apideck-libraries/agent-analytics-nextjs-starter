@@ -167,6 +167,7 @@ Any `{ capture(event) }` object is a valid adapter.
 | Variable | Description |
 |---|---|
 | `NEXT_PUBLIC_POSTHOG_KEY` | PostHog project API key (the public key used by the JS SDK). Find it under *Project settings → Project API Key*. |
+| `AGENT_ANALYTICS_ID_SECRET` | Secret used to key the anonymous `distinctId` HMAC. Any long random string. Without it each edge instance keys differently and ids stop correlating; publishing it makes the id reversible back to the client IP, so treat it like any other secret. |
 | `NEXT_PUBLIC_POSTHOG_HOST` | PostHog ingestion host. Defaults to `https://us.i.posthog.com`. Set to `https://eu.i.posthog.com` for EU cloud, or your own reverse-proxy domain (e.g. `https://svc.example.com`) to dodge ad-blockers. |
 
 ## Learn more

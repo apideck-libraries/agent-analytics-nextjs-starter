@@ -43,6 +43,13 @@ export function middleware(req: NextRequest) {
     void trackVisit(req, {
       analytics,
       source: decision.reason,
+      // 0.12 keys distinctId with an HMAC. Without a stable secret the library
+      // falls back to a random per-instance one, so ids stop correlating
+      // between edge instances. Set AGENT_ANALYTICS_ID_SECRET in your project.
+      idSecret: process.env.AGENT_ANALYTICS_ID_SECRET,
+      // Adapters surface non-2xx now; without this a wrong PostHog key is
+      // indistinguishable from success.
+      onError: (err) => console.error('[agent-analytics]', err.message),
       properties: { site: 'starter' }
     })
 
