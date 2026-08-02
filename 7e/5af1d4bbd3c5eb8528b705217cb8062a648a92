@@ -1,0 +1,21 @@
+package.json
+  s_1a9eb32591b8d9::t_923bbc575f94a3 13
+package-lock.json
+  s_1a9eb32591b8d9::t_dddb5cd705c2d4 11,24-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.19",
+  "base_commit_sha": "7e5af1d4bbd3c5eb8528b705217cb8062a648a92",
+  "prompts": {},
+  "sessions": {
+    "s_1a9eb32591b8d9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4dba8408-d7ac-4810-87de-baf67324bf85",
+        "model": "claude-opus-5"
+      },
+      "human_author": "GJ <info@gertjandewilde.com>"
+    }
+  }
+}
