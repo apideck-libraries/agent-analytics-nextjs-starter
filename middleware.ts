@@ -5,6 +5,9 @@ import {
   markdownHeaders,
   synthesizeMarkdownPointer
 } from '@apideck/agent-analytics/markdown'
+// Identity verification lives on its own subpath: the published IP-range
+// tables are only pulled into bundles that ask for them.
+import { verifyRequest } from '@apideck/agent-analytics/verify'
 
 const ORIGIN = process.env.NEXT_PUBLIC_SITE_ORIGIN || 'http://localhost:3000'
 
@@ -30,16 +33,49 @@ export function middleware(req: NextRequest) {
 
   const decision = markdownServeDecision(req)
 
-  if (decision) {
-    // Track every Markdown fetch with the source label (ua-rewrite,
-    // md-suffix, accept-header). Errors are swallowed — analytics can
-    // never break the response.
-    void trackVisit(req, {
-      analytics,
-      source: decision.reason,
-      properties: { site: 'starter' }
-    })
+  // Track first, serve second — and track *every* agent request, not only the
+  // ones that asked for Markdown.
+  //
+  // This used to sit inside `if (decision)`, which meant the starter captured
+  // Markdown fetches and nothing else. That is a small slice of reality: on
+  // Apideck's own properties, Markdown was 8,283 requests out of 9.96M from
+  // machines over a quarter. Everything else — coding agents on curl and
+  // python-requests, undeclared headless traffic — went unrecorded, so anyone
+  // pointing a crawler at an HTML page saw an empty dashboard and reasonably
+  // concluded the template was broken.
+  void trackVisit(req, {
+    analytics,
 
+    // Browsers are the one thing worth dropping: they already run your
+    // client-side analytics, so capturing them here just doubles the bill.
+    // The exception is a browser that explicitly asked for Markdown — that is
+    // a deliberate act and a genuine signal, so when there is a decision the
+    // filter is lifted.
+    skipBrowsers: !decision,
+
+    // Where the request came from: 'ua-rewrite' | 'md-suffix' |
+    // 'accept-header' when Markdown was requested, otherwise a plain page view.
+    source: decision ? decision.reason : 'page-view',
+
+    // Turns `bot_verification` into one of verified / spoofed / unverifiable /
+    // not-claimed by checking the client IP against the vendor's published
+    // ranges. A user agent is a claim; this is the only part of the event that
+    // checks it. Costs one range lookup and no network call.
+    verify: verifyRequest,
+
+    // distinctId is an HMAC. Without a stable secret the library falls back to
+    // a random per-instance one, so ids stop correlating between edge
+    // instances. Set AGENT_ANALYTICS_ID_SECRET in your project.
+    idSecret: process.env.AGENT_ANALYTICS_ID_SECRET,
+
+    // Adapters surface non-2xx; without this a wrong PostHog key is
+    // indistinguishable from success.
+    onError: (err) => console.error('[agent-analytics]', err.message),
+
+    properties: { site: 'starter' }
+  })
+
+  if (decision) {
     const target = resolveMirrorPath(decision.strippedPath)
     if (target) {
       const url = req.nextUrl.clone()
