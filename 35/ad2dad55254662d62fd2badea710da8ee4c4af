@@ -1,0 +1,25 @@
+middleware.ts
+  s_1a9eb32591b8d9::t_ed307670b2885e 46-52
+package.json
+  s_1a9eb32591b8d9::t_ed307670b2885e 13
+README.md
+  s_1a9eb32591b8d9::t_44d76d09945f9c 170
+package-lock.json
+  s_1a9eb32591b8d9::t_594c1d274d44b8 11,24-26,28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.19",
+  "base_commit_sha": "35ad2dad55254662d62fd2badea710da8ee4c4af",
+  "prompts": {},
+  "sessions": {
+    "s_1a9eb32591b8d9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4dba8408-d7ac-4810-87de-baf67324bf85",
+        "model": "claude-opus-5"
+      },
+      "human_author": "GJ <info@gertjandewilde.com>"
+    }
+  }
+}
